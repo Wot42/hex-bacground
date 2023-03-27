@@ -16,12 +16,20 @@ var mouse = {
   x: null,
   y: null
 };
+window.addEventListener( 'mousemove',
+  (event) => {
+    mouse.x = event.x;
+    mouse.y = event.y;
+     console.log(mouse)
+  }
+)
 
 class Hex {
   constructor(x, y, size){
     this.x = x;
     this.y = y;
     this.size = size;
+    this.targetSize = 0;
     this.colour = 'black';
   }
 
@@ -36,6 +44,34 @@ class Hex {
     ctxH.closePath();
     ctxH.fillStyle = this.colour;
     ctxH.fill();
+  }
+
+  update(){
+    var radius = Math.sqrt(((mouse.x-this.x)*(mouse.x-this.x))+((mouse.y-this.y)*(mouse.y-this.y)));
+
+    // square turn to radius
+    if (radius < maxMouseRadius){
+      this.targetSize = maxSize - 1;
+      // set mid range
+    } else if (radius < minMouseRadius) {
+      this.targetSize = minSize + ((maxSize-minSize)*(1-(radius-maxMouseRadius)/(minMouseRadius-maxMouseRadius)));
+    }else{
+      this.targetSize = minSize;
+    }
+    if (this.size < this.targetSize) this.size += 5;
+    if (this.size > this.targetSize) this.size -= 0.2;
+
+    if (this.size < this.targetSize && this.size > this.targetSize-0.5 ) this.size = this.targetSize;
+    if (this.size > this.targetSize && this.size < this.targetSize+5 ) this.size = this.targetSize;
+
+
+
+    // if (this.size > maxSize - 1) this.size = maxSize - 1;
+    //  if (this.size < minSize) this.size = minSize;
+
+
+
+    this.draw();
   }
 }
 
@@ -56,6 +92,18 @@ var setUp = () => {
   hexArray.forEach(hex => {hex.draw();});
 }
 
+function animate() { //REFACTOR
+  requestAnimationFrame(animate);
+  ctxH.clearRect(0, 0, innerWidth, innerHeight);
+
+  for (let i = 0; i < hexArray.length; i++){
+    hexArray[i].update();
+  }
+
+  // console.log(hexArray[0].)
+}
+
 // var testHex = new Hex(100,100,50);
 // testHex.draw();
 setUp();
+animate();
