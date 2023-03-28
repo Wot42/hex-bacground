@@ -3,16 +3,23 @@ const ctxH = canvasHex.getContext('2d');
 ctxH.canvas.width = window.innerWidth;
 ctxH.canvas.height = window.innerHeight;
 
-var hexArray = [];
-const maxSize = 40;
-const minSize = 0;
-const maxMouseRadius = 100;
-const minMouseRadius = 300;
-const rootThree = Math.sqrt(3);
-var rowHex = null;
-var columnHex = null;
+const canvasSpot = document.getElementById('canvasSpot');
+const ctxS = canvasSpot.getContext('2d');
+ctxS.canvas.width = window.innerWidth;
+ctxS.canvas.height = window.innerHeight;
 
-var mouse = {
+let hexArray = [];
+const maxSize = 30;
+const minSize = 0;
+const maxMouseRadius = 60;
+const minMouseRadius = 200;
+const growSpeed = 5;
+const shrinkSpeed = 0.3;
+const rootThree = Math.sqrt(3);
+let rowHex = null;
+let columnHex = null;
+
+let mouse = {
   x: null,
   y: null
 };
@@ -47,60 +54,62 @@ class Hex {
   }
 
   update(){
-    var radius = Math.sqrt(((mouse.x-this.x)*(mouse.x-this.x))+((mouse.y-this.y)*(mouse.y-this.y)));
+    let radius = Math.sqrt(((mouse.x-this.x)*(mouse.x-this.x))+((mouse.y-this.y)*(mouse.y-this.y)));
 
-    // square turn to radius
     if (radius < maxMouseRadius){
       this.targetSize = maxSize - 1;
-      // set mid range
     } else if (radius < minMouseRadius) {
       this.targetSize = minSize + ((maxSize-minSize)*(1-(radius-maxMouseRadius)/(minMouseRadius-maxMouseRadius)));
-    }else{
+    } else {
       this.targetSize = minSize;
     }
-    if (this.size < this.targetSize) this.size += 5;
-    if (this.size > this.targetSize) this.size -= 0.2;
 
-    if (this.size < this.targetSize && this.size > this.targetSize-0.5 ) this.size = this.targetSize;
-    if (this.size > this.targetSize && this.size < this.targetSize+5 ) this.size = this.targetSize;
-
-
-
-    // if (this.size > maxSize - 1) this.size = maxSize - 1;
-    //  if (this.size < minSize) this.size = minSize;
-
-
+    if (this.size < this.targetSize && this.size + growSpeed < this.targetSize) {
+      this.size += growSpeed;
+    } else if (this.size > this.targetSize && this.size - shrinkSpeed > this.targetSize) {
+      this.size -= shrinkSpeed;
+    } else {
+      this.size = this.targetSize;
+    }
 
     this.draw();
   }
 }
 
-var setUp = () => {
+let drawSpot = () => {
+  ctxS.beginPath();
+
+
+
+}
+
+let setUp = () => {
   hexArray = [];
   rowHex = Math.floor(window.innerWidth/(maxSize*3))+2;
   columnHex = Math.floor(window.innerHeight/(maxSize*rootThree/2))+2;
-  var x = 0;
-  var y = 0;
+  let x = 0;
+  let y = 0;
 
-  for (var r = 0; r < rowHex; r++){
-    for (var c = 0; c < columnHex; c++){
+  for (let r = 0; r < rowHex; r++){
+    for (let c = 0; c < columnHex; c++){
       x = r*maxSize*3 + ((c%2 == 0) ? 0 : (maxSize*1.5));
       y = c*maxSize*rootThree/2;
-      hexArray.push(new Hex(x,y,maxSize-1));
+      hexArray.push(new Hex(x,y,minSize));
     }
   }
-  hexArray.forEach(hex => {hex.draw();});
+  // hexArray[75].colour = "red";
 }
 
-function animate() { //REFACTOR
-  requestAnimationFrame(animate);
+let animate= () => {
+
   ctxH.clearRect(0, 0, innerWidth, innerHeight);
 
   for (let i = 0; i < hexArray.length; i++){
     hexArray[i].update();
   }
+  requestAnimationFrame(animate);
 
-  // console.log(hexArray[0].)
+  // console.log("target", hexArray[75].targetSize, "size", hexArray[75].size );
 }
 
 // var testHex = new Hex(100,100,50);
