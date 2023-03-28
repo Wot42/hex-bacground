@@ -4,7 +4,8 @@
   box-sizing: border-box;
 }
 #canvasGradient {
-  background: linear-gradient(blue,lightblue);
+  /* background: linear-gradient(blue,lightblue); */
+  background: black;
 }
 
 canvas {

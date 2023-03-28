@@ -37,7 +37,7 @@ class Hex {
     this.y = y;
     this.size = size;
     this.targetSize = 0;
-    this.colour = 'black';
+    this.colour = 'rgb(0,20,70)';
   }
 
   draw(){
@@ -77,11 +77,22 @@ class Hex {
 }
 
 let drawSpot = () => {
+  let grad = ctxS.createRadialGradient(mouse.x,mouse.y, 0, mouse.x,mouse.y, maxMouseRadius*2/3)
+  grad.addColorStop(0.7, 'rgb(102,255,255)' );
+  grad.addColorStop(1, 'rgb(0,0,0)' );
+  grad.addColorStop(0.2, "rgb(210,255,255)");
+
   ctxS.beginPath();
-
-
-
+  ctxS.arc(mouse.x,mouse.y,maxMouseRadius, 0, 2*Math.PI, false);
+  ctxS.closePath();
+  ctxS.fillStyle = grad;
+  ctxS.fill();
 }
+
+
+
+
+
 
 let setUp = () => {
   hexArray = [];
@@ -103,10 +114,12 @@ let setUp = () => {
 let animate= () => {
 
   ctxH.clearRect(0, 0, innerWidth, innerHeight);
+  ctxS.clearRect(0, 0, innerWidth, innerHeight);
 
   for (let i = 0; i < hexArray.length; i++){
     hexArray[i].update();
   }
+  drawSpot();
   requestAnimationFrame(animate);
 
   // console.log("target", hexArray[75].targetSize, "size", hexArray[75].size );
