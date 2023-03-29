@@ -28,8 +28,8 @@ let rowHex = null;
 let columnHex = null;
 
 const bg = true;
-const hexColour = 'rgb(0,30,100)';
-const bgColour = 'rgb(0,12,37)';
+const hexColour = 'rgb(0, 30, 100)';
+const bgColour = 'rgb(0, 12, 37)';
 const explodeSpeed = 10;
 
 let mouse = {
@@ -56,12 +56,12 @@ class Hex {
 
   draw(){
     ctxH.beginPath();
-    ctxH.moveTo(this.x - this.size, this.y);
-    ctxH.lineTo(this.x - (this.size/2), this.y + (this.size * rootThree/2));
-    ctxH.lineTo(this.x + (this.size/2), this.y + (this.size * rootThree/2));
-    ctxH.lineTo(this.x + this.size, this.y);
-    ctxH.lineTo(this.x + (this.size/2), this.y - (this.size * rootThree/2));
-    ctxH.lineTo(this.x - (this.size/2), this.y - (this.size * rootThree/2));
+    ctxH.moveTo(this.x-this.size, this.y);
+    ctxH.lineTo(this.x-(this.size/2), this.y+(this.size*rootThree/2));
+    ctxH.lineTo(this.x+(this.size/2), this.y+(this.size*rootThree/2));
+    ctxH.lineTo(this.x+this.size, this.y);
+    ctxH.lineTo(this.x+(this.size/2), this.y-(this.size*rootThree/2));
+    ctxH.lineTo(this.x-(this.size/2), this.y-(this.size*rootThree/2));
     ctxH.closePath();
     ctxH.fillStyle = this.colour;
     ctxH.fill();
@@ -69,12 +69,12 @@ class Hex {
 
   drawBG(){
     ctxB.beginPath();
-    ctxB.moveTo(this.x - this.size, this.y);
-    ctxB.lineTo(this.x - (this.size/2), this.y + (this.size * rootThree/2));
-    ctxB.lineTo(this.x + (this.size/2), this.y + (this.size * rootThree/2));
-    ctxB.lineTo(this.x + this.size, this.y);
-    ctxB.lineTo(this.x + (this.size/2), this.y - (this.size * rootThree/2));
-    ctxB.lineTo(this.x - (this.size/2), this.y - (this.size * rootThree/2));
+    ctxB.moveTo(this.x-this.size, this.y);
+    ctxB.lineTo(this.x-(this.size/2), this.y+(this.size*rootThree/2));
+    ctxB.lineTo(this.x+(this.size/2), this.y+(this.size*rootThree/2));
+    ctxB.lineTo(this.x+this.size, this.y);
+    ctxB.lineTo(this.x+(this.size/2), this.y-(this.size*rootThree/2));
+    ctxB.lineTo(this.x-(this.size/2), this.y-(this.size*rootThree/2));
     ctxB.closePath();
     ctxB.fillStyle = this.colour;
     ctxB.fill();
@@ -84,16 +84,16 @@ class Hex {
     let radius = Math.sqrt(((mouse.x-this.x)*(mouse.x-this.x))+((mouse.y-this.y)*(mouse.y-this.y)));
 
     if (radius < maxMouseRadius){
-      this.targetSize = maxSize - 1;
+      this.targetSize = maxSize-1;
     } else if (radius < minMouseRadius) {
       this.targetSize = minSize + ((maxSize-minSize)*(1-(radius-maxMouseRadius)/(minMouseRadius-maxMouseRadius)));
     } else {
       this.targetSize = minSize;
     }
 
-    if (this.size < this.targetSize && this.size + growSpeed < this.targetSize) {
+    if (this.size < this.targetSize && this.size+growSpeed < this.targetSize) {
       this.size += growSpeed;
-    } else if (this.size > this.targetSize && this.size - shrinkSpeed > this.targetSize) {
+    } else if (this.size > this.targetSize && this.size-shrinkSpeed > this.targetSize) {
       this.size -= shrinkSpeed;
     } else {
       this.size = this.targetSize;
@@ -115,18 +115,18 @@ class Explode {
 
   draw(){
     let gradEx = ctxS.createRadialGradient(this.x, this.y, this.innerSize, this.x, this.y, this.size)
-    gradEx.addColorStop(0.7, 'rgb(102,255,255)' );
-    gradEx.addColorStop(1, 'rgba(0,0,0,0)' );
-    gradEx.addColorStop(0.2, "rgb(210,255,255)");
-    gradEx.addColorStop(0, 'rgba(0,0,0,0)' );
+    gradEx.addColorStop(0, 'rgba(0, 0, 0, 0)');
+    gradEx.addColorStop(0.2, 'rgb(210, 255, 255)');
+    gradEx.addColorStop(0.7, 'rgb(102, 255, 255)');
+    gradEx.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
     ctxS.fillStyle = gradEx;
     ctxS.fillRect(0, 0, innerWidth, innerHeight);
   }
 
   update(){
-    this.size+= explodeSpeed;
-    this.innerSize+= explodeSpeed;
+    this.size += explodeSpeed;
+    this.innerSize += explodeSpeed;
     if (this.innerSize > screenDiagonal) this.done = true;
     this.draw();
   }
@@ -134,17 +134,10 @@ class Explode {
 }
 
 let drawSpot = () => {
-  let grad = ctxS.createRadialGradient(mouse.x,mouse.y, 0, mouse.x,mouse.y, maxMouseRadius*2/3)
-  grad.addColorStop(0.7, 'rgb(102,255,255)' );
-  grad.addColorStop(0.2, "rgb(210,255,255)");
-  grad.addColorStop(1, 'rgba(0,0,0,0)' );
-
-  // ctxS.beginPath();
-  // ctxS.arc(mouse.x,mouse.y,maxMouseRadius, 0, 2*Math.PI, false);
-  // ctxS.closePath();
-  // ctxS.fillStyle = grad;
-  // ctxS.fill();
-
+  let grad = ctxS.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, maxMouseRadius*2/3)
+  grad.addColorStop(0.2, 'rgb(210, 255, 255)');
+  grad.addColorStop(0.7, 'rgb(102, 255, 255)');
+  grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctxS.fillStyle = grad;
   ctxS.fillRect(0, 0, innerWidth, innerHeight);
 }
@@ -163,16 +156,15 @@ let setUp = () => {
       x = r*maxSize*3 + ((c%2 == 0) ? 0 : (maxSize*1.5));
       y = c*maxSize*rootThree/2;
       hexArray.push(new Hex(x, y, minSize, hexColour));
-      if (bg) bgArray.push(new Hex(x, y, maxSize - 1, bgColour));
+      if (bg) bgArray.push(new Hex(x, y, maxSize-1, bgColour));
     }
   }
-  // hexArray[75].colour = "red";
+
   if (bg){
     for (let i = 0; i < bgArray.length; i++){
       bgArray[i].drawBG();
     }
   }
-  console.log(bgArray)
 }
 
 let animate= () => {
@@ -183,20 +175,30 @@ let animate= () => {
   for (let i = 0; i < hexArray.length; i++){
     hexArray[i].update();
   }
+
   if (explodeArray.length > 0) {
-    for (let i =  explodeArray.length - 1 ; i >= 0; i--){
+    for (let i =  explodeArray.length-1 ; i >= 0; i--){
       explodeArray[i].update();
-      if (explodeArray[i].done) explodeArray.splice(i,1);
-      console.log(explodeArray)
+      if (explodeArray[i].done) explodeArray.splice( i, 1);
     }
   }
+
   drawSpot();
   requestAnimationFrame(animate);
-
-  // console.log("target", hexArray[75].targetSize, "size", hexArray[75].size );
 }
 
-// var testHex = new Hex(100,100,50);
-// testHex.draw();
 setUp();
 animate();
+
+window.addEventListener('resize',
+  function () {
+    ctxB.canvas.width = window.innerWidth;
+    ctxB.canvas.height = window.innerHeight;
+    ctxS.canvas.width = window.innerWidth;
+    ctxS.canvas.height = window.innerHeight;
+    ctxH.canvas.width = window.innerWidth;
+    ctxH.canvas.height = window.innerHeight;
+
+    setUp();
+  }
+)
