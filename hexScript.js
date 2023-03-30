@@ -1,37 +1,48 @@
+// option setters
+const bg = true; // enables the backgrond hexes
+const exp = true; // enabels the explode effect
+const sp = true; // enabels the spot light effect
+const hexColour = 'rgb(0, 30, 100)'; // colour for the hilight hex
+const bgColour = 'rgb(0, 12, 37)'; // colour for the background hex
+const spotLightColour = 'rgb(210, 255, 255)';
+const spotDeepColour = 'rgb(102, 255, 255)';
+const explodeSpeed = 10; // speed of the explotion efect
+const maxSize = 20; // the sixe of all hexagons
+const minSize = 0; // the minimum size of the hilight hexagons
+const maxMouseRadius = 60; // radius from the mouse where the hilights hexes are at their max
+const minMouseRadius = 200; // the radious from the mouse where the hilights hexes are at ther min
+const growSpeed = 5; // the speed at which hilight hexes grow
+const shrinkSpeed = 0.3; // the speed at which the hilight hexes shrink
+
+// set up for later
+let hexArray = [];
+let bgArray = [];
+let explodeArray = [];
+const rootThree = Math.sqrt(3); // needed for hexagon calculations
+let screenDiagonal = Math.sqrt(((window.innerWidth)*(window.innerWidth))+((window.innerHeight)*(window.innerHeight)));
+let rowHex = null;
+let columnHex = null;
+
+
+// canvas for the growing and shrinking lighter hexes
 const canvasHex = document.getElementById('canvasHex');
 const ctxH = canvasHex.getContext('2d');
 ctxH.canvas.width = window.innerWidth;
 ctxH.canvas.height = window.innerHeight;
 
+// canvas for the spot light and the exploding effect
 const canvasSpot = document.getElementById('canvasSpot');
 const ctxS = canvasSpot.getContext('2d');
 ctxS.canvas.width = window.innerWidth;
 ctxS.canvas.height = window.innerHeight;
 
+//canvas for the fixed hexagones in the background. dosen't update with animation.
 const canvasBackground = document.getElementById('canvasBackground');
 const ctxB = canvasBackground.getContext('2d');
 ctxB.canvas.width = window.innerWidth;
 ctxB.canvas.height = window.innerHeight;
 
-let hexArray = [];
-let bgArray = [];
-let explodeArray = [];
-const maxSize = 20;
-const minSize = 0;
-const maxMouseRadius = 60;
-const minMouseRadius = 200;
-const growSpeed = 5;
-const shrinkSpeed = 0.3;
-const rootThree = Math.sqrt(3);
-let screenDiagonal = Math.sqrt(((window.innerWidth)*(window.innerWidth))+((window.innerHeight)*(window.innerHeight)));
-let rowHex = null;
-let columnHex = null;
-
-const bg = true;
-const hexColour = 'rgb(0, 30, 100)';
-const bgColour = 'rgb(0, 12, 37)';
-const explodeSpeed = 10;
-
+// mouse position
 let mouse = {
   x: null,
   y: null
@@ -43,18 +54,22 @@ window.addEventListener( 'mousemove',
     //  console.log(mouse)
   }
 )
+
+// explode when click
+if (exp) {
 window.addEventListener( 'click', () => explodeArray.push(new Explode(mouse.x, mouse.y)) )
+}
 
 class Hex {
   constructor(x, y, size, colour){
     this.x = x;
     this.y = y;
-    this.size = size;
-    this.targetSize = 0;
+    this.size = size; // the curent hex size
+    this.targetSize = 0; // the sixe the hex is growing or shrinking towards.
     this.colour = colour;
   }
 
-  draw(){
+  draw(){ // draws to ctxH
     ctxH.beginPath();
     ctxH.moveTo(this.x-this.size, this.y);
     ctxH.lineTo(this.x-(this.size/2), this.y+(this.size*rootThree/2));
@@ -67,7 +82,7 @@ class Hex {
     ctxH.fill();
   }
 
-  drawBG(){
+  drawBG(){ // draws to ctxB
     ctxB.beginPath();
     ctxB.moveTo(this.x-this.size, this.y);
     ctxB.lineTo(this.x-(this.size/2), this.y+(this.size*rootThree/2));
@@ -80,7 +95,7 @@ class Hex {
     ctxB.fill();
   }
 
-  update(){
+  update(){ // sets tardet size and grows or shrinks to meet it.
     let radius = Math.sqrt(((mouse.x-this.x)*(mouse.x-this.x))+((mouse.y-this.y)*(mouse.y-this.y)));
 
     if (radius < maxMouseRadius){
@@ -107,24 +122,24 @@ class Explode {
   constructor(x, y){
     this.x = x;
     this.y = y;
-    this.size = maxMouseRadius;
-    this.innerSize = 0;
-    this.done = false;
+    this.size = maxMouseRadius; // outer radius
+    this.innerSize = 0; // inner radius
+    this.done = false; // used to clear off screen explotions
     this.speed = explodeSpeed;
   }
 
-  draw(){
+  draw(){ // draws to ctxS
     let gradEx = ctxS.createRadialGradient(this.x, this.y, this.innerSize, this.x, this.y, this.size)
     gradEx.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    gradEx.addColorStop(0.2, 'rgb(210, 255, 255)');
-    gradEx.addColorStop(0.7, 'rgb(102, 255, 255)');
+    gradEx.addColorStop(0.2, spotLightColour);
+    gradEx.addColorStop(0.7, spotDeepColour);
     gradEx.addColorStop(1, 'rgba(0, 0, 0, 0)');
 
     ctxS.fillStyle = gradEx;
     ctxS.fillRect(0, 0, innerWidth, innerHeight);
   }
 
-  update(){
+  update(){  // grows the explotion
     this.size += explodeSpeed;
     this.innerSize += explodeSpeed;
     if (this.innerSize > screenDiagonal) this.done = true;
@@ -133,16 +148,16 @@ class Explode {
 
 }
 
-let drawSpot = () => {
+let drawSpot = () => { // draws to ctxS
   let grad = ctxS.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, maxMouseRadius*2/3)
-  grad.addColorStop(0.2, 'rgb(210, 255, 255)');
-  grad.addColorStop(0.7, 'rgb(102, 255, 255)');
+  grad.addColorStop(0.2, spotLightColour);
+  grad.addColorStop(0.7, spotDeepColour);
   grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
   ctxS.fillStyle = grad;
   ctxS.fillRect(0, 0, innerWidth, innerHeight);
 }
 
-let setUp = () => {
+let setUp = () => { // resets arrays and draws all setup hexs
   hexArray = [];
   bgArray = [];
   explodeArray = [];
@@ -167,7 +182,7 @@ let setUp = () => {
   }
 }
 
-let animate= () => {
+let animate= () => { // calls all update functions
 
   ctxH.clearRect(0, 0, innerWidth, innerHeight);
   ctxS.clearRect(0, 0, innerWidth, innerHeight);
@@ -183,14 +198,12 @@ let animate= () => {
     }
   }
 
-  drawSpot();
+  if (sp) drawSpot();
+
   requestAnimationFrame(animate);
 }
 
-setUp();
-animate();
-
-window.addEventListener('resize',
+window.addEventListener('resize', // will call setUp if window size changes
   function () {
     ctxB.canvas.width = window.innerWidth;
     ctxB.canvas.height = window.innerHeight;
@@ -202,3 +215,7 @@ window.addEventListener('resize',
     setUp();
   }
 )
+
+
+setUp();
+animate();
